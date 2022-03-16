@@ -1,11 +1,11 @@
 import osmnx as ox
 import pandas as pd
-
+import time
 
 
 def out_osm(place,tags,fname):
+    ox.config(timeout=100000,)
     df = ox.geometries_from_place(place, tags=tags,)
-    ox.downloader.overpass_request(df, pause=None)
 
     #df = df[df.geom_type == 'Point'][:]
     '''Wybór poszczególnych kolumn
@@ -16,7 +16,7 @@ def out_osm(place,tags,fname):
     df=df[keys]
     '''
     df.to_csv(fname,encoding='utf8') 
-    return df
+    
     
 
 place = 'Warsaw, PL'
@@ -31,4 +31,11 @@ tags_lines={'highway':['busway','cycleway']
             ,'busway	':['lane']
             ,'railway':['light_rail','monorail','rail','subway','tram']
             ,'route	':['bicycle','bus','light_rail','railway','tram']}
-df=out_osm(place,tags,'poi.csv')
+
+tags2={'railway':['halt','platform','station','tram_stop']}
+
+start_time = time.time()
+
+out_osm(place,tags2,'poi.csv')
+
+print("--- %s seconds ---" % int(time.time() - start_time))
